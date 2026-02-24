@@ -5,26 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <style>
-      #cards,#player,#choice,#winblock {
-        display: flex;
-        gap: 5px;
-        justify-content: center;
-      }
-      
-      #cards{
-        font-size: 30px;
-      }
+      body {
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          gap: 20px;
+        }
 
-      #choice{
-        gap: 30px;
-      }
+          #setup{
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 100%;
+                text-align: center;
+                padding: 20px;
+                border: 1px solid #ccc"
+              }
+
+          #cards,
+          #player,
+          #choice,
+          #winblock {
+                align-items: center;
+                display: flex;
+                gap: 5px;
+                justify-content: space-evenly;
+              }
+
+              #cards {
+                display: flex;
+                font-size: 15 px;
+                flex-wrap: wrap;
+              }
+
+              #cards div {
+                display: inline;
+                text-align: center;
+                border: 2px solid black;
+                margin: 2px;
+              }
+
+              #cards div div {
+                font-size: 20px;
+                border: none;
+              }
+
+              #choice {
+                justify-content: center;
+                gap: 5px;
+              }
     </style>
   </head>
   <body>
-    <div id="cards"></div>
-    <div id= "player"></div>
-    <div id="choice"></div>
-    <div id = "winblock"></div>
+    <div id="setup">
+      <h1>Настройка игры</h1>
+      <h3>Введите кол-во игроков</h3>
+      <input type="number" id="playersInput" value="2" />
+      <button id="startBtn">Начать игру</button>
+    </div>
+    <div id="game-container">
+      <div id="cards"></div>
+      <div id="player"></div>
+      <div id="choice"></div>
+      <div id="winblock"></div>
+    </div>
+
     <script src="main.js"></script>
   </body>
 </html>
