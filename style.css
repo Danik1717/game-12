@@ -1,0 +1,57 @@
+body {
+margin: 0;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+gap: 20px;
+}
+
+#setup{
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+height: 100%;
+text-align: center;
+padding: 20px;
+border: 1px solid #ccc"
+}
+
+#cards,
+#player,
+#choice,
+#winblock {
+align-items: center;
+display: flex;
+gap: 5px;
+justify-content: space-evenly;
+}
+
+#cards {
+display: flex;
+font-size: 20px;
+flex-wrap: wrap;
+}
+
+#cards div {
+display: inline;
+text-align: center;
+border: 2px solid black;
+margin: 2px;
+}
+
+#cards div div {
+font-size: 20px;
+border: none;
+}
+
+#choice {
+flex-direction: column;
+justify-content: center;
+gap: 5px;
+}
+
+
+
