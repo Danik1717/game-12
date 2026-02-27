@@ -1,10 +1,16 @@
 let CountPlayers = 2;
 let PlayersCards = [];
+let currentplayer = 1;
 
+// Вынесенные элементы
 const setupBlock = document.querySelector("#setup");
 const gameContainer = document.querySelector("#game-container");
 const startBtn = document.querySelector("#startBtn");
 const playersInput = document.querySelector("#playersInput");
+const cardsEl = document.querySelector("#cards");
+const playerEl = document.querySelector("#player");
+const choiceEl = document.querySelector("#choice");
+const winblockEl = document.querySelector("#winblock");
 
 startBtn.addEventListener("click", initGame);
 
@@ -28,8 +34,17 @@ function initGame() {
   }
 }
 
-function removeCards(cardsToRemove) {
+function switchPlayer() {
+  if (currentplayer == CountPlayers) {
+    currentplayer = 1;
+  } else {
+    currentplayer++;
+  }
+  renderCards();
+  renderTurn();
+}
 
+function removeCards(cardsToRemove) {
   PlayersCards[currentplayer - 1] = PlayersCards[currentplayer - 1].filter(
     (card) => !cardsToRemove.includes(card),
   );
@@ -38,74 +53,65 @@ function removeCards(cardsToRemove) {
     renderCards();
     return;
   }
-  currentplayer == CountPlayers ? (currentplayer = 1) : currentplayer++;
 
-  renderCards();
-  renderTurn();
+  switchPlayer();
 }
 
 function renderTurn() {
-    let player = document.querySelector("#player");
-    player.innerHTML = `<h3>Ход игрока: ${currentplayer}</h3>`;
+  playerEl.innerHTML = `<h3>Ход игрока: ${currentplayer}</h3>`;
 
-    let choice = document.querySelector("#choice");
-    choice.innerHTML = "";
+  choiceEl.innerHTML = "";
 
-    let rollBtn = document.createElement("button");
-    rollBtn.style.marginTop = "10px"
-    rollBtn.innerText = "Roll Dice";
-    
-    rollBtn.addEventListener("click", () => {
-        let d1 = rollDice();
-        let d2 = rollDice();
-        renderActionButtons(d1, d2);
-    });
+  let rollBtn = document.createElement("button");
+  rollBtn.style.marginTop = "10px";
+  rollBtn.innerText = "Roll Dice";
 
-    choice.appendChild(rollBtn);
+  rollBtn.addEventListener("click", () => {
+    let d1 = rollDice();
+    let d2 = rollDice();
+    renderActionButtons(d1, d2);
+  });
+
+  choiceEl.appendChild(rollBtn);
 }
 
 function renderActionButtons(d1, d2) {
-    let choice = document.querySelector("#choice");
-    choice.innerHTML = "";
+  choiceEl.innerHTML = "";
 
-    let resultText = document.createElement("div");
-    resultText.style.marginBottom = "15px"; 
-    resultText.innerHTML = `<h3>Выпало: ${d1} и ${d2}</h3>`;
-    choice.appendChild(resultText);
+  let resultText = document.createElement("div");
+  resultText.style.marginBottom = "15px";
+  resultText.innerHTML = `<h3>Выпало: ${d1} и ${d2}</h3>`;
+  choiceEl.appendChild(resultText);
 
-    let buttonsContainer = document.createElement("div");
-    buttonsContainer.style.display = "flex";
-    buttonsContainer.style.gap = "10px";
-    buttonsContainer.style.justifyContent = "center";
+  let buttonsContainer = document.createElement("div");
 
-    let b1 = document.createElement("button");
-    b1.innerText = `${d1} , ${d2}`;
+  let b1 = document.createElement("button");
+  b1.innerText = `${d1} , ${d2}`;
 
-    let b2 = document.createElement("button");
-    b2.innerText = (d1 + d2);
+  let b2 = document.createElement("button");
+  b2.innerText = d1 + d2;
 
-    let skipbtn = document.createElement("button");
-    skipbtn.innerText = "Skip";
+  let skipbtn = document.createElement("button");
+  skipbtn.innerText = "Skip";
 
-    updateButtonsState(d1, d2, b1, b2);
+  updateButtonsState(d1, d2, b1, b2);
 
-    b1.addEventListener("click", () => removeCards([d1, d2]));
-    b2.addEventListener("click", () => removeCards([d1 + d2]));
-    skipbtn.addEventListener("click", () => {
-        currentplayer = currentplayer == CountPlayers ? 1 : currentplayer + 1;
-        renderCards();
-        renderTurn();
-    });
+  b1.addEventListener("click", () => removeCards([d1, d2]));
+  b2.addEventListener("click", () => removeCards([d1 + d2]));
+  skipbtn.addEventListener("click", () => {
+    currentplayer = currentplayer == CountPlayers ? 1 : currentplayer + 1;
+    renderCards();
+    renderTurn();
+  });
+  
+  buttonsContainer.appendChild(b1);
+  buttonsContainer.appendChild(b2);
+  buttonsContainer.appendChild(skipbtn);
 
-    buttonsContainer.appendChild(b2);
-    buttonsContainer.appendChild(b1);
-    buttonsContainer.appendChild(skipbtn);
-
-    choice.appendChild(buttonsContainer);
+  choiceEl.appendChild(buttonsContainer);
 }
 
 function renderCards() {
-  let cardsEl = document.querySelector("#cards");
   cardsEl.innerHTML = "";
 
   for (let p = 0; p < CountPlayers; p++) {
@@ -121,7 +127,6 @@ function renderCards() {
         div.style.color = "red";
       } else {
         div.style.color = "rgb(0, 255, 0)";
-        
       }
 
       playercardsblock.appendChild(div);
@@ -135,33 +140,29 @@ function rollDice() {
 
 function IsWin() {
   if (PlayersCards[currentplayer - 1].length == 0) {
-    let buttons = document.querySelectorAll("#choice button");
+    let buttons = choiceEl.querySelectorAll("button");
     buttons.forEach((btn) => {
       btn.disabled = true;
       btn.style.opacity = "0.5";
     });
 
-    let winblock = document.querySelector("#winblock");
     let winMessage = document.createElement("div");
     winMessage.style.textAlign = "center";
     winMessage.innerHTML = `<h1 style="color: red;">Победил игрок № ${currentplayer}!</h1>`;
 
-    winblock.appendChild(winMessage);
+    winblockEl.appendChild(winMessage);
 
-    let player = document.querySelector("#player");
-    player.innerText = "";
+    playerEl.innerText = "";
 
     return true;
   }
 }
 
 function RestartGame() {
-  let choice = document.querySelector("#choice");
-
   let restartbtn = document.createElement("button");
   restartbtn.innerText = "restart game";
 
-  choice.appendChild(restartbtn);
+  choiceEl.appendChild(restartbtn);
 
   restartbtn.addEventListener("click", function () {
     PlayersCards.length = 0;
@@ -171,8 +172,7 @@ function RestartGame() {
     currentplayer = 1;
     renderCards();
     renderTurn();
-    let winblock = document.querySelector("#winblock");
-    winblock.innerText = "";
+    winblockEl.innerText = "";
 
     setupBlock.style.display = "flex";
     gameContainer.style.display = "none";
@@ -190,12 +190,3 @@ function updateButtonsState(d1, d2, b1, b2) {
   b1.disabled = !bothExist;
   b1.style.opacity = bothExist ? "1" : "0.3";
 }
-
-let choice = document.querySelector("#choice");
-  let rolldicebtn = document.createElement("button")
-  rolldicebtn.innerText="roll dice";
-  choice.appendChild("rolldicebtn")
-  rolldicebtn.addEventListener("click",()=>{
-    let d1 = rollDice();
-    let d2 = rollDice();
-  })
