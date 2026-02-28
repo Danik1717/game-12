@@ -2,7 +2,6 @@ let CountPlayers = 2;
 let PlayersCards = [];
 let currentplayer = 1;
 
-// Вынесенные элементы
 const setupBlock = document.querySelector("#setup");
 const gameContainer = document.querySelector("#game-container");
 const startBtn = document.querySelector("#startBtn");
@@ -15,7 +14,7 @@ const winblockEl = document.querySelector("#winblock");
 startBtn.addEventListener("click", initGame);
 
 function initGame() {
-  if (playersInput.value > 1 && playersInput.value < 9) {
+  if (playersInput.value > 1 && playersInput.value < 33) {
     CountPlayers = parseInt(playersInput.value);
     PlayersCards = [];
     for (let i = 0; i < CountPlayers; i++) {
@@ -30,7 +29,7 @@ function initGame() {
     renderCards();
     renderTurn();
   } else {
-    alert("Число игроков не должно быть больше 8-ми и меньше 1-го");
+    alert("Число игроков не должно быть больше 32 и меньше 1-го");
   }
 }
 
@@ -103,7 +102,7 @@ function renderActionButtons(d1, d2) {
     renderCards();
     renderTurn();
   });
-  
+
   buttonsContainer.appendChild(b1);
   buttonsContainer.appendChild(b2);
   buttonsContainer.appendChild(skipbtn);
