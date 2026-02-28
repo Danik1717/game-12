@@ -1,6 +1,6 @@
-let CountPlayers = 2;
-let PlayersCards = [];
-let currentplayer = 1;
+let countPlayers = 2;
+let playersCards = [];
+let currentPlayer = 1;
 
 const setupBlock = document.querySelector("#setup");
 const gameContainer = document.querySelector("#game-container");
@@ -14,14 +14,14 @@ const winblockEl = document.querySelector("#winblock");
 startBtn.addEventListener("click", initGame);
 
 function initGame() {
-  if (playersInput.value > 1 && playersInput.value < 33) {
-    CountPlayers = parseInt(playersInput.value);
-    PlayersCards = [];
-    for (let i = 0; i < CountPlayers; i++) {
-      PlayersCards.push([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
-    }
+  currentPlayer = 1;
 
-    currentplayer = 1;
+  if (playersInput.value > 1 && playersInput.value < 33) {
+    countPlayers = parseInt(playersInput.value);
+    playersCards = [];
+    for (let i = 0; i < countPlayers; i++) {
+      playersCards.push([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    }
 
     setupBlock.style.display = "none";
     gameContainer.style.display = "block";
@@ -29,26 +29,22 @@ function initGame() {
     renderCards();
     renderTurn();
   } else {
-    alert("Число игроков не должно быть больше 32 и меньше 1-го");
+    alert("Number of players should >=1 and <=32");
   }
 }
 
 function switchPlayer() {
-  if (currentplayer == CountPlayers) {
-    currentplayer = 1;
-  } else {
-    currentplayer++;
-  }
+  currentPlayer = currentPlayer === countPlayers ? 1 : currentPlayer + 1;
   renderCards();
   renderTurn();
 }
 
 function removeCards(cardsToRemove) {
-  PlayersCards[currentplayer - 1] = PlayersCards[currentplayer - 1].filter(
+  playersCards[currentPlayer - 1] = playersCards[currentPlayer - 1].filter(
     (card) => !cardsToRemove.includes(card),
   );
-  if (IsWin()) {
-    RestartGame();
+  if (checkWin()) {
+    restartGame();
     renderCards();
     return;
   }
@@ -57,12 +53,13 @@ function removeCards(cardsToRemove) {
 }
 
 function renderTurn() {
-  playerEl.innerHTML = `<h3>Ход игрока: ${currentplayer}</h3>`;
+  playerEl.innerHTML = `<h3>Now turn of player: ${currentPlayer}</h3>`;
 
   choiceEl.innerHTML = "";
 
   let rollBtn = document.createElement("button");
-  rollBtn.style.marginTop = "10px";
+  rollBtn.style.marginTop = "20px";
+  rollBtn.style.padding = "20px";
   rollBtn.innerText = "Roll Dice";
 
   rollBtn.addEventListener("click", () => {
@@ -79,7 +76,7 @@ function renderActionButtons(d1, d2) {
 
   let resultText = document.createElement("div");
   resultText.style.marginBottom = "15px";
-  resultText.innerHTML = `<h3>Выпало: ${d1} и ${d2}</h3>`;
+  resultText.innerHTML = `<h3>Dices: ${d1} и ${d2}</h3>`;
   choiceEl.appendChild(resultText);
 
   let buttonsContainer = document.createElement("div");
@@ -98,9 +95,7 @@ function renderActionButtons(d1, d2) {
   b1.addEventListener("click", () => removeCards([d1, d2]));
   b2.addEventListener("click", () => removeCards([d1 + d2]));
   skipbtn.addEventListener("click", () => {
-    currentplayer = currentplayer == CountPlayers ? 1 : currentplayer + 1;
-    renderCards();
-    renderTurn();
+    switchPlayer();
   });
 
   buttonsContainer.appendChild(b1);
@@ -113,16 +108,21 @@ function renderActionButtons(d1, d2) {
 function renderCards() {
   cardsEl.innerHTML = "";
 
-  for (let p = 0; p < CountPlayers; p++) {
+  for (let p = 0; p < countPlayers; p++) {
     let playercardsblock = document.createElement("div");
-    playercardsblock.innerHTML = `<h3>Игрок №${p + 1}</h3>`;
+    playercardsblock.innerHTML = `<h3>Player №${p + 1}</h3>`;
     cardsEl.appendChild(playercardsblock);
+
+    if (p + 1 === currentPlayer) {
+      playercardsblock.style.border = "3px solid #ffaa00";
+      playercardsblock.style.borderRadius = "5px";
+    }
 
     for (let i = 1; i <= 12; i++) {
       let div = document.createElement("div");
       div.innerText = i;
 
-      if (PlayersCards[p].includes(i)) {
+      if (playersCards[p].includes(i)) {
         div.style.color = "red";
       } else {
         div.style.color = "rgb(0, 255, 0)";
@@ -137,8 +137,8 @@ function rollDice() {
   return Math.round(Math.random() * 5 + 1);
 }
 
-function IsWin() {
-  if (PlayersCards[currentplayer - 1].length == 0) {
+function checkWin() {
+  if (playersCards[currentPlayer - 1].length === 0) {
     let buttons = choiceEl.querySelectorAll("button");
     buttons.forEach((btn) => {
       btn.disabled = true;
@@ -147,7 +147,7 @@ function IsWin() {
 
     let winMessage = document.createElement("div");
     winMessage.style.textAlign = "center";
-    winMessage.innerHTML = `<h1 style="color: red;">Победил игрок № ${currentplayer}!</h1>`;
+    winMessage.innerHTML = `<h1 style="color: red;">Player № ${currentPlayer} is Win!</h1>`;
 
     winblockEl.appendChild(winMessage);
 
@@ -157,20 +157,14 @@ function IsWin() {
   }
 }
 
-function RestartGame() {
+function restartGame() {
   let restartbtn = document.createElement("button");
   restartbtn.innerText = "restart game";
 
   choiceEl.appendChild(restartbtn);
 
   restartbtn.addEventListener("click", function () {
-    PlayersCards.length = 0;
-    for (let i = 0; i < CountPlayers; i++) {
-      PlayersCards.push([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
-    }
-    currentplayer = 1;
-    renderCards();
-    renderTurn();
+    playersCards.length = 0;
     winblockEl.innerText = "";
 
     setupBlock.style.display = "flex";
@@ -179,7 +173,7 @@ function RestartGame() {
 }
 
 function updateButtonsState(d1, d2, b1, b2) {
-  const currentCards = PlayersCards[currentplayer - 1];
+  let currentCards = playersCards[currentPlayer - 1];
 
   let sumExists = currentCards.includes(d1 + d2);
   b2.disabled = !sumExists;
